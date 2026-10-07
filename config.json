@@ -1,0 +1,7 @@
+{
+  "kit": {
+    "form_id": "",
+    "tags": {}
+  },
+  "_how": "Create a free Kit account, a form, and one tag per app slug in apps.json. Put the form id in form_id and each tag's numeric id under tags, e.g. {\"pinfiles\": \"1234567\"}. Both are public values, not secrets. Empty form_id = the page says signups open soon."
+}

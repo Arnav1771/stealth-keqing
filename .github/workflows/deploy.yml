@@ -1,0 +1,28 @@
+name: Deploy hub
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test and build
+        run: |
+          python3 -m unittest scripts/test_build.py
+          python3 scripts/build.py
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site
+          publish_branch: gh-pages
+          user_name: Arnav1771
+          user_email: 60522445+Arnav1771@users.noreply.github.com
