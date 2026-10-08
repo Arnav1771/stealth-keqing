@@ -31,6 +31,21 @@ class BuildTest(unittest.TestCase):
         self.assertIn('value="999" data-app="pinfiles"', page)
         self.assertIn('name="email_address"', page)
 
+    def test_whats_new_and_feed(self):
+        import xml.etree.ElementTree as ET
+        page = self.render({"form_id": "", "tags": {}})
+        with_news = [a for a in APPS if a.get("news")]
+        self.assertEqual(page.count('class="new"'), len(with_news), "one latest line per app with news")
+        self.assertIn('href="feed.xml"', page)
+        root = ET.fromstring((build.OUT / "feed.xml").read_text())
+        ns = {"a": "http://www.w3.org/2005/Atom"}
+        entries = root.findall("a:entry", ns)
+        self.assertEqual(len(entries), sum(len(a["news"]) for a in with_news))
+        ids = [x.find("a:id", ns).text for x in entries]
+        self.assertEqual(len(ids), len(set(ids)), "entry ids are unique")
+        for x in entries:  # readers need absolute links
+            self.assertTrue(x.find("a:link", ns).get("href").startswith("https://"))
+
     def test_relative_assets_only(self):
         page = self.render({"form_id": "", "tags": {}})
         self.assertNotIn('href="/', page)
